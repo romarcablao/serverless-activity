@@ -1,0 +1,28 @@
+{
+
+  "name": "serverless-activity",
+  "description": "Serverless Activity (Lambda, APIGW, S3, and SQS)",
+  "version": "1.0.0",
+  "author": "Romar Cablao <romarcablao@gmail.com>",
+  "license": "ISC",
+  "keywords": [
+    "serverless",
+    "lambda",
+    "sqs",
+    "s3"
+  ],
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1385.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "serverless-dotenv": "^1.0.0-beta.2",
+    "serverless-offline": "^12.0.4"
+  }
+}

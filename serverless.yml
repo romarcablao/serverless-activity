@@ -1,0 +1,54 @@
+service: serverless-activity
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+  stage: dev
+  region: ap-southeast-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource:
+        Fn::GetAtt: [ SQSQueue, Arn ]
+
+  environment:
+    SQS_QUEUE_URL: { Ref: SQSQueue }
+
+functions:
+  sender:
+    handler: handler.sender.process
+    events:
+      - httpApi:
+          method: '*'
+          path: /send
+  receiver:
+    handler: handler.receiver.process
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - SQSQueue
+              - Arn
+
+package:
+ individually: true
+ patterns:
+   - '!.test'
+   - '!.docs'
+   - '!.README.md'
+
+resources:
+ Resources:
+   SQSDemoBucket:
+     Type: AWS::S3::Bucket
+     Properties:
+       BucketName: sqs-bucket-${opt:stage, self:provider.stage}-dump-files
+   SQSQueue:
+     Type: AWS::SQS::Queue
+     Properties:
+       QueueName: sqs-queue-${opt:stage, self:provider.stage}-fifo
+       FifoQueue: true
