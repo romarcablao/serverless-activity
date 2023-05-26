@@ -50,5 +50,5 @@ resources:
    SQSQueue:
      Type: AWS::SQS::Queue
      Properties:
-       QueueName: sqs-queue-${opt:stage, self:provider.stage}-fifo
+       QueueName: sqs-queue-${opt:stage, self:provider.stage}.fifo
        FifoQueue: true
