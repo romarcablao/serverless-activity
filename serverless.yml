@@ -14,9 +14,20 @@ provider:
         - sqs:*
       Resource:
         Fn::GetAtt: [ SQSQueue, Arn ]
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+      Resource:
+        Fn::GetAtt: [ SQSDemoBucket, Arn ]
+    - Effect: Allow
+      Action:
+        - s3:Get*
+      Resource:
+        - "*"
 
   environment:
     SQS_QUEUE_URL: { Ref: SQSQueue }
+    S3_BUCKET_NAME: { Ref: SQSDemoBucket }
 
 functions:
   sender:
