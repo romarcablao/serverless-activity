@@ -24,11 +24,17 @@ provider:
         - s3:Get*
       Resource:
         - "*"
+    - Effect: Allow
+      Action:
+        - lambda:*
+      Resource:
+        - "*"
 
   environment:
     SQS_QUEUE_URL: { Ref: SQSQueue }
     S3_BUCKET_NAME: { Ref: SQSDemoBucket }
-
+    DOWNSTREAM_LAMBDA_FUNCTION_NAME: ${self:service}-${self:provider.stage}-downstream
+    
 functions:
   sender:
     handler: handler.sender.process
@@ -44,6 +50,9 @@ functions:
             Fn::GetAtt:
               - SQSQueue
               - Arn
+  downstream:
+    handler: handler.downstream.process
+    events: []
 
 package:
  individually: true
