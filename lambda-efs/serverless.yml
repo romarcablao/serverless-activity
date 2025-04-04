@@ -1,0 +1,77 @@
+service: image-processor-efs
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: ap-southeast-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource:
+            - "arn:aws:lambda:${aws:region}:${aws:accountId}:function:${self:service}-${sls:stage}-uploadToS3"
+
+        - Effect: Allow
+          Action:
+            - elasticfilesystem:ClientMount
+            - elasticfilesystem:ClientWrite
+            - elasticfilesystem:ClientRead
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource:
+            - "arn:aws:s3:::${self:custom.uploadBucketName}/*"
+            - "arn:aws:s3:::${self:custom.processsedBucketName}/*"
+
+custom:
+  uploadBucketName: CHANGE_ME
+  processsedBucketName: CHANGE_ME
+  efsAccessPoint: CHANGE_ME
+  efsMountPath: /mnt/lambda
+
+functions:
+  processImage:
+    handler: src/processImage.handler
+    architecture: arm64
+    timeout: 30
+    memorySize: 2048
+    environment:
+      BUCKET_NAME: ${self:custom.uploadBucketName}
+      EFS_MOUNT_PATH: ${self:custom.efsMountPath}
+      UPLOAD_FUNCTION_NAME: ${self:service}-${sls:stage}-uploadToS3
+    events:
+      - s3:
+          bucket: ${self:custom.uploadBucketName}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .png
+          existing: true
+    vpc:
+      securityGroupIds:
+        - CHANGE_ME
+      subnetIds:
+        - CHANGE_ME
+    fileSystemConfig:
+      localMountPath: ${self:custom.efsMountPath}
+      arn: arn:aws:elasticfilesystem:${aws:region}:${aws:accountId}:access-point/${self:custom.efsAccessPoint}
+
+  uploadToS3:
+    handler: src/uploadToS3.handler
+    architecture: arm64
+    timeout: 30
+    memorySize: 2048
+    environment:
+      OUTPUT_BUCKET: ${self:custom.processsedBucketName}
+      EFS_MOUNT_PATH: ${self:custom.efsMountPath}
+    vpc:
+      securityGroupIds:
+        - CHANGE_ME
+      subnetIds:
+        - CHANGE_ME
+    fileSystemConfig:
+      localMountPath: ${self:custom.efsMountPath}
+      arn: arn:aws:elasticfilesystem:${aws:region}:${aws:accountId}:access-point/${self:custom.efsAccessPoint}

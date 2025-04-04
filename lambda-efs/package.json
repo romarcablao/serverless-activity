@@ -1,0 +1,22 @@
+{
+  "name": "serverless-activity-02",
+  "description": "Serverless Activity (Lambda, EFS, S3, and SQS)",
+  "author": "Romar Cablao <romarcablao@gmail.com>",
+  "main": "handler.js",
+  "keywords": [
+    "serverless",
+    "lambda",
+    "efs",
+    "sqs",
+    "s3"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-lambda": "^3.782.0",
+    "@aws-sdk/client-s3": "^3.782.0",
+    "aws-sdk": "^2.1692.0"
+  }
+}

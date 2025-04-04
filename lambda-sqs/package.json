@@ -1,6 +1,5 @@
 {
-
-  "name": "serverless-activity",
+  "name": "serverless-activity-01",
   "description": "Serverless Activity (Lambda, APIGW, S3, and SQS)",
   "version": "1.0.0",
   "author": "Romar Cablao <romarcablao@gmail.com>",
